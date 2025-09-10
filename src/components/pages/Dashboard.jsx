@@ -283,11 +283,19 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Button
             variant="outline"
-            onClick={() => navigate("/farms")}
+onClick={() => navigate("/farms")}
             className="flex flex-col items-center space-y-2 h-20"
           >
             <ApperIcon name="MapPin" size={24} />
             <span>Add Farm</span>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/crops")}
+            className="flex flex-col items-center space-y-2 h-20"
+          >
+            <ApperIcon name="Sprout" size={24} />
+            <span>View Crops</span>
           </Button>
           <Button
             variant="outline"
@@ -304,14 +312,6 @@ const Dashboard = () => {
           >
             <ApperIcon name="DollarSign" size={24} />
             <span>Log Expense</span>
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => navigate("/weather")}
-            className="flex flex-col items-center space-y-2 h-20"
-          >
-            <ApperIcon name="Cloud" size={24} />
-            <span>Weather</span>
           </Button>
         </div>
       </Card>

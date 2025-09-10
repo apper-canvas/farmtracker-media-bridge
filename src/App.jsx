@@ -5,10 +5,10 @@ import Header from "@/components/organisms/Header";
 import BottomNavigation from "@/components/organisms/BottomNavigation";
 import Dashboard from "@/components/pages/Dashboard";
 import Farms from "@/components/pages/Farms";
+import Crops from "@/components/pages/Crops";
 import Tasks from "@/components/pages/Tasks";
 import Finances from "@/components/pages/Finances";
 import Weather from "@/components/pages/Weather";
-
 function App() {
   return (
     <Router>
@@ -21,6 +21,7 @@ function App() {
             <Route path="/farms" element={<Farms />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/finances" element={<Finances />} />
+<Route path="/crops" element={<Crops />} />
             <Route path="/weather" element={<Weather />} />
           </Routes>
         </main>

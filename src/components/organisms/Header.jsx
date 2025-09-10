@@ -7,10 +7,11 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const getPageTitle = () => {
+const getPageTitle = () => {
     switch (location.pathname) {
       case "/": return "Dashboard";
       case "/farms": return "Farms";
+      case "/crops": return "Crops";
       case "/tasks": return "Tasks";
       case "/finances": return "Finances";
       case "/weather": return "Weather";
@@ -18,10 +19,11 @@ const Header = () => {
     }
   };
 
-  const getPageIcon = () => {
+const getPageIcon = () => {
     switch (location.pathname) {
       case "/": return "BarChart3";
       case "/farms": return "MapPin";
+      case "/crops": return "Sprout";
       case "/tasks": return "CheckSquare";
       case "/finances": return "DollarSign";
       case "/weather": return "Cloud";
