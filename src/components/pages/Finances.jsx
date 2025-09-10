@@ -174,10 +174,8 @@ const getFilteredTransactions = () => {
     return transactionForm.type === "income" ? incomeCategories : expenseCategories;
   };
 
-  if (loading) return <Loading />;
-  if (error) return <Error message={error} onRetry={loadData} />;
-
-const filteredTransactions = useMemo(() => {
+// Move useMemo to top level before any conditional logic
+  const filteredTransactions = useMemo(() => {
     const filtered = getFilteredTransactions();
     
     return filtered.sort((a, b) => {
@@ -209,6 +207,10 @@ const filteredTransactions = useMemo(() => {
       return 0;
     });
   }, [transactions, filterType, filterCategory, sortBy, sortOrder]);
+
+  // Handle loading and error states in JSX instead of early returns
+  if (loading) return <Loading />;
+  if (error) return <Error message={error} onRetry={loadData} />;
 
   return (
     <div className="space-y-8 pb-24">
