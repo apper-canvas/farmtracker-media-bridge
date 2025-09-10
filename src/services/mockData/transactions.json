@@ -1,0 +1,74 @@
+[
+  {
+    "Id": 1,
+    "farmId": "1",
+    "type": "expense",
+    "category": "Seeds",
+    "amount": -450.00,
+    "description": "Sweet corn seeds for north field",
+    "date": "2024-04-10T00:00:00Z"
+  },
+  {
+    "Id": 2,
+    "farmId": "1",
+    "type": "expense",
+    "category": "Fertilizer",
+    "amount": -320.50,
+    "description": "Organic fertilizer for tomatoes",
+    "date": "2024-04-25T00:00:00Z"
+  },
+  {
+    "Id": 3,
+    "farmId": "2",
+    "type": "expense",
+    "category": "Equipment",
+    "amount": -1250.00,
+    "description": "New irrigation sprinklers",
+    "date": "2024-05-15T00:00:00Z"
+  },
+  {
+    "Id": 4,
+    "farmId": "1",
+    "type": "income",
+    "category": "Crop Sales",
+    "amount": 2850.00,
+    "description": "Tomato harvest sales to local market",
+    "date": "2024-06-20T00:00:00Z"
+  },
+  {
+    "Id": 5,
+    "farmId": "2",
+    "type": "expense",
+    "category": "Labor",
+    "amount": -800.00,
+    "description": "Seasonal workers for weeding",
+    "date": "2024-06-01T00:00:00Z"
+  },
+  {
+    "Id": 6,
+    "farmId": "3",
+    "type": "expense",
+    "category": "Fuel",
+    "amount": -180.75,
+    "description": "Diesel fuel for tractors",
+    "date": "2024-06-28T00:00:00Z"
+  },
+  {
+    "Id": 7,
+    "farmId": "2",
+    "type": "income",
+    "category": "Subsidies",
+    "amount": 1500.00,
+    "description": "Government agricultural subsidy",
+    "date": "2024-07-01T00:00:00Z"
+  },
+  {
+    "Id": 8,
+    "farmId": "3",
+    "type": "expense",
+    "category": "Utilities",
+    "amount": -145.20,
+    "description": "Electricity for irrigation pumps",
+    "date": "2024-07-05T00:00:00Z"
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "Id": 1,
+    "farmId": "1",
+    "name": "Corn",
+    "variety": "Sweet Corn",
+    "plantedDate": "2024-04-15T00:00:00Z",
+    "expectedHarvest": "2024-08-15T00:00:00Z",
+    "status": "Growing",
+    "notes": "Planted in north field, good germination rate"
+  },
+  {
+    "Id": 2,
+    "farmId": "1",
+    "name": "Tomatoes",
+    "variety": "Roma",
+    "plantedDate": "2024-05-01T00:00:00Z",
+    "expectedHarvest": "2024-07-30T00:00:00Z",
+    "status": "Ready",
+    "notes": "Greenhouse grown, excellent quality"
+  },
+  {
+    "Id": 3,
+    "farmId": "2",
+    "name": "Wheat",
+    "variety": "Winter Wheat",
+    "plantedDate": "2024-03-20T00:00:00Z",
+    "expectedHarvest": "2024-07-20T00:00:00Z",
+    "status": "Growing",
+    "notes": "Field 3, good soil conditions"
+  },
+  {
+    "Id": 4,
+    "farmId": "2",
+    "name": "Soybeans",
+    "variety": "Early Maturing",
+    "plantedDate": "2024-05-10T00:00:00Z",
+    "expectedHarvest": "2024-09-10T00:00:00Z",
+    "status": "Planted",
+    "notes": "Recently planted, monitoring growth"
+  },
+  {
+    "Id": 5,
+    "farmId": "3",
+    "name": "Potatoes",
+    "variety": "Russet",
+    "plantedDate": "2024-04-05T00:00:00Z",
+    "expectedHarvest": "2024-08-05T00:00:00Z",
+    "status": "Growing",
+    "notes": "Good weather conditions this season"
+  }
+]
