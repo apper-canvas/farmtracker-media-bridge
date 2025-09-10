@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/atoms/Card";
 import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
+import Select from "@/components/atoms/Select";
 import ApperIcon from "@/components/ApperIcon";
 import { format, differenceInDays } from "date-fns";
 
 const CropList = ({ crops, onEdit, onDelete, onHarvest }) => {
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
   const getStatusVariant = (status) => {
     switch (status.toLowerCase()) {
       case "planted": return "info";
@@ -32,11 +35,79 @@ const CropList = ({ crops, onEdit, onDelete, onHarvest }) => {
     if (days === 0) return "Today";
     if (days === 1) return "Tomorrow";
     return `${days} days`;
-  };
+};
+
+  const sortedCrops = useMemo(() => {
+    const sorted = [...crops].sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case "name":
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case "status":
+          aValue = a.status.toLowerCase();
+          bValue = b.status.toLowerCase();
+          break;
+        case "plantedDate":
+          aValue = new Date(a.plantedDate);
+          bValue = new Date(b.plantedDate);
+          break;
+        case "expectedHarvest":
+          aValue = new Date(a.expectedHarvest);
+          bValue = new Date(b.expectedHarvest);
+          break;
+        default:
+          return 0;
+      }
+      
+      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+    
+    return sorted;
+  }, [crops, sortBy, sortOrder]);
 
   return (
-    <div className="space-y-4">
-      {crops.map((crop) => (
+<div className="space-y-4">
+      {/* Sort Controls */}
+      <div className="bg-white/95 backdrop-blur-sm rounded-xl border border-gray-200/50 p-4 shadow-lg">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center space-x-2">
+            <ApperIcon name="ArrowUpDown" size={16} className="text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">Sort by:</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="min-w-[140px]"
+            >
+              <option value="name">Crop Name</option>
+              <option value="status">Status</option>
+              <option value="plantedDate">Planted Date</option>
+              <option value="expectedHarvest">Harvest Date</option>
+            </Select>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+              className="flex items-center space-x-1"
+            >
+              <ApperIcon 
+                name={sortOrder === "asc" ? "ArrowUp" : "ArrowDown"} 
+                size={14} 
+              />
+              <span className="text-xs">{sortOrder === "asc" ? "A-Z" : "Z-A"}</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Crops List */}
+      {sortedCrops.map((crop) => (
         <Card key={crop.Id} className="hover:scale-102 transform transition-all duration-300">
           <CardContent className="p-4">
             <div className="flex items-start justify-between">

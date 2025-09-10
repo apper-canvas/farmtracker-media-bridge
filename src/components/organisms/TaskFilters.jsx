@@ -1,7 +1,7 @@
 import React from "react";
-import Button from "@/components/atoms/Button";
-import Select from "@/components/atoms/Select";
 import ApperIcon from "@/components/ApperIcon";
+import Select from "@/components/atoms/Select";
+import Button from "@/components/atoms/Button";
 import { cn } from "@/utils/cn";
 
 const TaskFilters = ({ filters, onFiltersChange }) => {
@@ -44,7 +44,7 @@ const TaskFilters = ({ filters, onFiltersChange }) => {
     });
   };
 
-  const hasActiveFilters = filters.status !== "all" || filters.priority !== "all" || filters.category !== "all";
+const hasActiveFilters = filters.status !== "all" || filters.priority !== "all" || filters.category !== "all";
 
   return (
     <div className="bg-white/95 backdrop-blur-sm rounded-xl border border-gray-200/50 p-4 shadow-lg">
@@ -93,28 +93,19 @@ const TaskFilters = ({ filters, onFiltersChange }) => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-          {hasActiveFilters && (
+        {hasActiveFilters && (
+          <div className="flex justify-end">
             <Button
               variant="ghost"
               size="sm"
               onClick={clearFilters}
+              className="text-gray-500 hover:text-gray-700"
             >
-              <ApperIcon name="X" size={16} className="mr-1" />
-              Clear
+              <ApperIcon name="X" size={14} className="mr-1" />
+              Clear Filters
             </Button>
-          )}
-          
-          <div className={cn(
-            "px-3 py-1 rounded-lg text-xs font-medium border",
-            hasActiveFilters 
-              ? "bg-primary-50 text-primary-700 border-primary-200" 
-              : "bg-gray-50 text-gray-600 border-gray-200"
-          )}>
-            <ApperIcon name="Filter" size={12} className="inline mr-1" />
-            {hasActiveFilters ? "Filtered" : "All Tasks"}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

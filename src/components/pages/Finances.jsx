@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/atoms/Card";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
@@ -15,7 +15,7 @@ import { farmService } from "@/services/api/farmService";
 import { toast } from "react-toastify";
 
 const Finances = () => {
-  const [transactions, setTransactions] = useState([]);
+const [transactions, setTransactions] = useState([]);
   const [farms, setFarms] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,9 @@ const Finances = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [filterType, setFilterType] = useState("all");
-
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("date");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [transactionForm, setTransactionForm] = useState({
     farmId: "",
     type: "expense",
@@ -144,9 +146,28 @@ const Finances = () => {
     setEditingTransaction(null);
   };
 
-  const getFilteredTransactions = () => {
-    if (filterType === "all") return transactions;
-    return transactions.filter(t => t.type === filterType);
+const getFilteredTransactions = () => {
+    let filtered = [...transactions];
+    
+    // Filter by type
+    if (filterType !== "all") {
+      filtered = filtered.filter(t => t.type === filterType);
+    }
+    
+    // Filter by category
+    if (filterCategory !== "all") {
+      filtered = filtered.filter(t => t.category === filterCategory);
+    }
+    
+    return filtered;
+  };
+
+  const getAllCategories = () => {
+    const categories = new Set();
+    transactions.forEach(t => {
+      if (t.category) categories.add(t.category);
+    });
+    return Array.from(categories).sort();
   };
 
   const getCurrentCategories = () => {
@@ -156,9 +177,38 @@ const Finances = () => {
   if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadData} />;
 
-  const filteredTransactions = getFilteredTransactions().sort((a, b) => 
-    new Date(b.date) - new Date(a.date)
-  );
+const filteredTransactions = useMemo(() => {
+    const filtered = getFilteredTransactions();
+    
+    return filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case "date":
+          aValue = new Date(a.date);
+          bValue = new Date(b.date);
+          break;
+        case "amount":
+          aValue = Math.abs(a.amount);
+          bValue = Math.abs(b.amount);
+          break;
+        case "category":
+          aValue = a.category?.toLowerCase() || "";
+          bValue = b.category?.toLowerCase() || "";
+          break;
+        case "description":
+          aValue = a.description.toLowerCase();
+          bValue = b.description.toLowerCase();
+          break;
+        default:
+          return 0;
+      }
+      
+      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [transactions, filterType, filterCategory, sortBy, sortOrder]);
 
   return (
     <div className="space-y-8 pb-24">
@@ -208,26 +258,100 @@ const Finances = () => {
             </div>
           )}
 
-          {/* Filter Tabs */}
-          <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
-            {[
-              { value: "all", label: "All Transactions", icon: "List" },
-              { value: "income", label: "Income", icon: "TrendingUp" },
-              { value: "expense", label: "Expenses", icon: "TrendingDown" }
-            ].map((tab) => (
-              <button
-                key={tab.value}
-                onClick={() => setFilterType(tab.value)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  filterType === tab.value
-                    ? "bg-white text-primary-600 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                <ApperIcon name={tab.icon} size={16} />
-                <span>{tab.label}</span>
-              </button>
-            ))}
+{/* Filters and Sort Controls */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl border border-gray-200/50 p-4 shadow-lg space-y-4">
+            {/* Filter Tabs */}
+            <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+              {[
+                { value: "all", label: "All Transactions", icon: "List" },
+                { value: "income", label: "Income", icon: "TrendingUp" },
+                { value: "expense", label: "Expenses", icon: "TrendingDown" }
+              ].map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => {
+                    setFilterType(tab.value);
+                    setFilterCategory("all"); // Reset category filter when changing type
+                  }}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    filterType === tab.value
+                      ? "bg-white text-primary-600 shadow-sm"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  <ApperIcon name={tab.icon} size={16} />
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Category and Sort Controls */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
+                <Select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                >
+                  <option value="all">All Categories</option>
+                  {getAllCategories().map(category => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Sort by</label>
+                <Select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="date">Date</option>
+                  <option value="amount">Amount</option>
+                  <option value="category">Category</option>
+                  <option value="description">Description</option>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Order</label>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+                    className="flex-1 justify-center"
+                  >
+                    <ApperIcon 
+                      name={sortOrder === "asc" ? "ArrowUp" : "ArrowDown"} 
+                      size={14} 
+                      className="mr-1"
+                    />
+                    {sortOrder === "asc" ? "Ascending" : "Descending"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Clear Filters */}
+            {(filterType !== "all" || filterCategory !== "all") && (
+              <div className="flex justify-end">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setFilterType("all");
+                    setFilterCategory("all");
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <ApperIcon name="X" size={14} className="mr-1" />
+                  Clear Filters
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Transactions List */}
