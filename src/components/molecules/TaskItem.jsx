@@ -6,8 +6,8 @@ import ApperIcon from "@/components/ApperIcon";
 import { format } from "date-fns";
 
 const TaskItem = ({ task, onComplete, onEdit, onDelete }) => {
-  const getPriorityVariant = (priority) => {
-    switch (priority.toLowerCase()) {
+const getPriorityVariant = (priority) => {
+    switch (priority?.toLowerCase() || 'medium') {
       case "high": return "error";
       case "medium": return "warning";
       case "low": return "info";
@@ -15,8 +15,8 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete }) => {
     }
   };
 
-  const getCategoryIcon = (category) => {
-    switch (category.toLowerCase()) {
+const getCategoryIcon = (category) => {
+    switch (category?.toLowerCase() || '') {
       case "watering": return "Droplets";
       case "harvesting": return "Wheat";
       case "planting": return "Sprout";
@@ -27,7 +27,7 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete }) => {
     }
   };
 
-const isOverdue = new Date(task.DueDate_c) < new Date() && !task.Completed_c;
+const isOverdue = task.DueDate_c && new Date(task.DueDate_c) < new Date() && !task.Completed_c;
   const isDueSoon = new Date(task.DueDate_c) - new Date() < 24 * 60 * 60 * 1000 && !task.Completed_c;
 
   return (
