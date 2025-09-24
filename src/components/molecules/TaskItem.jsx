@@ -27,8 +27,9 @@ const getCategoryIcon = (category) => {
     }
   };
 
-const isOverdue = task.DueDate_c && new Date(task.DueDate_c) < new Date() && !task.Completed_c;
-  const isDueSoon = new Date(task.DueDate_c) - new Date() < 24 * 60 * 60 * 1000 && !task.Completed_c;
+const isValidDate = task.DueDate_c && new Date(task.DueDate_c).toString() !== 'Invalid Date';
+const isOverdue = isValidDate && new Date(task.DueDate_c) < new Date() && !task.Completed_c;
+const isDueSoon = isValidDate && new Date(task.DueDate_c) - new Date() < 24 * 60 * 60 * 1000 && !task.Completed_c;
 
   return (
 <Card className={`transition-all duration-300 ${task.Completed_c ? "opacity-75" : ""} ${isOverdue ? "border-red-300 bg-red-50/50" : isDueSoon ? "border-yellow-300 bg-yellow-50/50" : ""}`}>
@@ -61,7 +62,7 @@ const isOverdue = task.DueDate_c && new Date(task.DueDate_c) < new Date() && !ta
               <div className="flex items-center space-x-4 text-xs text-gray-500">
                 <div className="flex items-center">
                   <ApperIcon name="Calendar" size={12} className="mr-1" />
-{format(new Date(task.DueDate_c), "MMM d, yyyy")}
+{isValidDate ? format(new Date(task.DueDate_c), "MMM d, yyyy") : "No due date"}
                 </div>
                 <div className="flex items-center">
                   <ApperIcon name="Tag" size={12} className="mr-1" />
