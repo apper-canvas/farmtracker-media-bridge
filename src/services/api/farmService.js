@@ -208,5 +208,3 @@ class FarmService {
 }
 
 export const farmService = new FarmService();
-
-export const farmService = new FarmService();
