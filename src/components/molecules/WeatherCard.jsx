@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/atoms/Card";
 import ApperIcon from "@/components/ApperIcon";
 
 const WeatherCard = ({ weather, isToday = false }) => {
-  const getWeatherIcon = (condition) => {
-    const conditionLower = condition.toLowerCase();
+const getWeatherIcon = (condition) => {
+    const conditionLower = (condition ?? 'clear').toLowerCase();
     if (conditionLower.includes("sun") || conditionLower.includes("clear")) return "Sun";
     if (conditionLower.includes("cloud")) return "Cloud";
     if (conditionLower.includes("rain")) return "CloudRain";
@@ -14,8 +14,8 @@ const WeatherCard = ({ weather, isToday = false }) => {
     return "Sun";
   };
 
-  const getWeatherGradient = (condition) => {
-    const conditionLower = condition.toLowerCase();
+const getWeatherGradient = (condition) => {
+    const conditionLower = (condition ?? 'clear').toLowerCase();
     if (conditionLower.includes("sun") || conditionLower.includes("clear")) return "from-yellow-400 to-orange-500";
     if (conditionLower.includes("cloud")) return "from-gray-400 to-gray-600";
     if (conditionLower.includes("rain")) return "from-blue-400 to-blue-600";
