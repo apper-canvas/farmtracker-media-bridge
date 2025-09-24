@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/atoms/Card";
-import Button from "@/components/atoms/Button";
-import Input from "@/components/atoms/Input";
-import Select from "@/components/atoms/Select";
-import FormField from "@/components/molecules/FormField";
-import ApperIcon from "@/components/ApperIcon";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
-import Badge from "@/components/atoms/Badge";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card";
 import { cropService } from "@/services/api/cropService";
 import { farmService } from "@/services/api/farmService";
 import { toast } from "react-toastify";
-import { format, differenceInDays } from "date-fns";
+import { differenceInDays, format } from "date-fns";
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
+import Farms from "@/components/pages/Farms";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import Input from "@/components/atoms/Input";
+import Select from "@/components/atoms/Select";
+import Button from "@/components/atoms/Button";
+import Badge from "@/components/atoms/Badge";
 
 const Crops = () => {
   const [crops, setCrops] = useState([]);
@@ -93,11 +94,11 @@ const Crops = () => {
   };
 
   const filteredAndSortedCrops = React.useMemo(() => {
-    let filtered = crops.filter(crop => {
-      const matchesSearch = crop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (crop.variety && crop.variety.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesStatus = statusFilter === "all" || crop.status.toLowerCase() === statusFilter.toLowerCase();
-      const matchesFarm = farmFilter === "all" || crop.farmId === farmFilter;
+let filtered = crops.filter(crop => {
+      const matchesSearch = crop.Name_c.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (crop.Variety_c && crop.Variety_c.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesStatus = statusFilter === "all" || crop.Status_c.toLowerCase() === statusFilter.toLowerCase();
+      const matchesFarm = farmFilter === "all" || crop.FarmId_c === farmFilter;
       
       return matchesSearch && matchesStatus && matchesFarm;
     });
@@ -106,25 +107,25 @@ const Crops = () => {
       let aValue, bValue;
       
       switch (sortBy) {
-        case "name":
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
+case "name":
+          aValue = a.Name_c.toLowerCase();
+          bValue = b.Name_c.toLowerCase();
           break;
         case "status":
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
+          aValue = a.Status_c.toLowerCase();
+          bValue = b.Status_c.toLowerCase();
           break;
         case "farm":
-          aValue = getFarmName(a.farmId).toLowerCase();
-          bValue = getFarmName(b.farmId).toLowerCase();
+          aValue = getFarmName(a.FarmId_c).toLowerCase();
+          bValue = getFarmName(b.FarmId_c).toLowerCase();
           break;
         case "plantedDate":
-          aValue = new Date(a.plantedDate);
-          bValue = new Date(b.plantedDate);
+          aValue = new Date(a.PlantedDate_c);
+          bValue = new Date(b.PlantedDate_c);
           break;
-        case "expectedHarvest":
-          aValue = new Date(a.expectedHarvest);
-          bValue = new Date(b.expectedHarvest);
+case "expectedHarvest":
+          aValue = new Date(a.ExpectedHarvest_c);
+          bValue = new Date(b.ExpectedHarvest_c);
           break;
         default:
           return 0;
@@ -167,13 +168,13 @@ const Crops = () => {
   const handleEdit = (crop) => {
     setEditingCrop(crop);
     setCropForm({
-      name: crop.name,
-      variety: crop.variety || "",
-      plantedDate: crop.plantedDate.split("T")[0],
-      expectedHarvest: crop.expectedHarvest.split("T")[0],
-      status: crop.status,
-      farmId: crop.farmId,
-      notes: crop.notes || ""
+name: crop.Name_c,
+      variety: crop.Variety_c || "",
+      plantedDate: crop.PlantedDate_c.split("T")[0],
+      expectedHarvest: crop.ExpectedHarvest_c.split("T")[0],
+      status: crop.Status_c,
+      farmId: crop.FarmId_c,
+      notes: crop.Notes_c || ""
     });
     setShowAddForm(true);
   };
@@ -269,7 +270,7 @@ const Crops = () => {
                 >
                   <option value="">Select a farm</option>
                   {farms.map(farm => (
-                    <option key={farm.Id} value={farm.Id}>{farm.name}</option>
+<option key={farm.Id} value={farm.Id}>{farm.Name_c}</option>
                   ))}
                 </Select>
               </FormField>
@@ -364,7 +365,7 @@ const Crops = () => {
               >
                 <option value="all">All Farms</option>
                 {farms.map(farm => (
-                  <option key={farm.Id} value={farm.Id}>{farm.name}</option>
+<option key={farm.Id} value={farm.Id}>{farm.Name_c}</option>
                 ))}
               </Select>
             </FormField>
@@ -423,54 +424,54 @@ const Crops = () => {
             </p>
           </div>
 
-          {filteredAndSortedCrops.map((crop) => (
+{filteredAndSortedCrops.map((crop) => (
             <Card key={crop.Id} className="hover:scale-102 transform transition-all duration-300">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3 flex-1">
                     <div className="flex-shrink-0 mt-1">
                       <div className="p-2 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg">
-                        <ApperIcon name={getCropIcon(crop.name)} size={18} className="text-white" />
+                        <ApperIcon name={getCropIcon(crop.Name_c)} size={18} className="text-white" />
                       </div>
                     </div>
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-gray-900">{crop.name}</h4>
-                        <Badge variant={getStatusVariant(crop.status)}>
-                          {crop.status}
+                        <h3 className="font-semibold text-gray-900">{crop.Name_c}</h3>
+                        <Badge variant={getStatusVariant(crop.Status_c)}>
+                          {crop.Status_c}
                         </Badge>
                       </div>
                       
                       <div className="space-y-1 mb-3">
-                        {crop.variety && (
-                          <p className="text-sm text-gray-600">Variety: {crop.variety}</p>
+                        {crop.Variety_c && (
+                          <p className="text-sm text-gray-600">Variety: {crop.Variety_c}</p>
                         )}
                         <p className="text-sm text-gray-600">
                           <ApperIcon name="MapPin" size={12} className="inline mr-1" />
-                          Farm: {getFarmName(crop.farmId)}
+                          Farm: {getFarmName(crop.FarmId_c)}
                         </p>
                       </div>
                       
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-500">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-500 mb-3">
                         <div className="flex items-center space-x-1">
                           <ApperIcon name="Calendar" size={12} />
-                          <span>Planted: {format(new Date(crop.plantedDate), "MMM d, yyyy")}</span>
+                          <span>Planted: {format(new Date(crop.PlantedDate_c), "MMM d, yyyy")}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <ApperIcon name="Clock" size={12} />
-                          <span>Harvest: {getDaysToHarvest(crop.expectedHarvest)}</span>
+                          <span>Harvest: {getDaysToHarvest(crop.ExpectedHarvest_c)}</span>
                         </div>
                       </div>
                       
-                      {crop.notes && (
-                        <p className="text-sm text-gray-600 mt-2 italic">{crop.notes}</p>
+                      {crop.Notes_c && (
+                        <p className="text-sm text-gray-600 mt-2 italic">{crop.Notes_c}</p>
                       )}
                     </div>
                   </div>
                   
                   <div className="flex items-center space-x-2 ml-4">
-                    {crop.status.toLowerCase() === "ready" && (
+                    {crop.Status_c.toLowerCase() === "ready" && (
                       <Button
                         size="sm"
                         variant="accent"

@@ -26,7 +26,7 @@ const [transactions, setTransactions] = useState([]);
   const [filterCategory, setFilterCategory] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [transactionForm, setTransactionForm] = useState({
+const [transactionForm, setTransactionForm] = useState({
     farmId: "",
     type: "expense",
     category: "",
@@ -83,7 +83,7 @@ const [transactions, setTransactions] = useState([]);
       };
 
       if (editingTransaction) {
-        const updated = await transactionService.update(editingTransaction.Id, transactionData);
+const updated = await transactionService.update(editingTransaction.Id, transactionData);
         setTransactions(prev => prev.map(t => t.Id === updated.Id ? updated : t));
         toast.success("Transaction updated successfully!");
       } else {
@@ -122,12 +122,12 @@ const [transactions, setTransactions] = useState([]);
   const handleEditTransaction = (transaction) => {
     setEditingTransaction(transaction);
     setTransactionForm({
-      farmId: transaction.farmId,
-      type: transaction.type,
-      category: transaction.category,
-      amount: Math.abs(transaction.amount).toString(),
-      description: transaction.description,
-      date: transaction.date.split("T")[0]
+farmId: transaction.FarmId_c,
+      type: transaction.Type_c,
+      category: transaction.Category_c,
+      amount: Math.abs(transaction.Amount_c).toString(),
+      description: transaction.Description_c,
+      date: transaction.Date_c.split("T")[0]
     });
     setShowAddForm(true);
   };
@@ -151,12 +151,12 @@ const getFilteredTransactions = () => {
     
     // Filter by type
     if (filterType !== "all") {
-      filtered = filtered.filter(t => t.type === filterType);
+filtered = filtered.filter(t => t.Type_c === filterType);
     }
     
     // Filter by category
-    if (filterCategory !== "all") {
-      filtered = filtered.filter(t => t.category === filterCategory);
+if (filterCategory !== "all") {
+      filtered = filtered.filter(t => t.Category_c === filterCategory);
     }
     
     return filtered;
@@ -183,20 +183,20 @@ const getFilteredTransactions = () => {
       
       switch (sortBy) {
         case "date":
-          aValue = new Date(a.date);
-          bValue = new Date(b.date);
+aValue = new Date(a.Date_c);
+          bValue = new Date(b.Date_c);
           break;
         case "amount":
-          aValue = Math.abs(a.amount);
-          bValue = Math.abs(b.amount);
+          aValue = Math.abs(a.Amount_c);
+          bValue = Math.abs(b.Amount_c);
           break;
         case "category":
-          aValue = a.category?.toLowerCase() || "";
-          bValue = b.category?.toLowerCase() || "";
+          aValue = a.Category_c?.toLowerCase() || "";
+          bValue = b.Category_c?.toLowerCase() || "";
           break;
         case "description":
-          aValue = a.description.toLowerCase();
-          bValue = b.description.toLowerCase();
+          aValue = a.Description_c.toLowerCase();
+          bValue = b.Description_c.toLowerCase();
           break;
         default:
           return 0;
@@ -404,8 +404,8 @@ const getFilteredTransactions = () => {
                   >
                     <option value="">Select a farm</option>
                     {farms.map(farm => (
-                      <option key={farm.Id} value={farm.Id}>
-                        {farm.name}
+<option key={farm.Id} value={farm.Id}>
+                        {farm.Name_c}
                       </option>
                     ))}
                   </Select>

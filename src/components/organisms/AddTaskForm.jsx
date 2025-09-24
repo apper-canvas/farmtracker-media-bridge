@@ -35,15 +35,15 @@ const AddTaskForm = ({ task, onSubmit, onCancel }) => {
   }, [formData.farmId]);
 
   useEffect(() => {
-    if (task) {
+if (task) {
       setFormData({
-        farmId: task.farmId || "",
-        cropId: task.cropId || "",
-        title: task.title || "",
-        description: task.description || "",
-        dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
-        priority: task.priority || "medium",
-        category: task.category || "watering"
+        farmId: task.FarmId_c || "",
+        cropId: task.CropId_c || "",
+        title: task.Title_c || "",
+        description: task.Description_c || "",
+        dueDate: task.DueDate_c ? task.DueDate_c.split("T")[0] : "",
+        priority: task.Priority_c || "medium",
+        category: task.Category_c || "watering"
       });
     }
   }, [task]);
@@ -60,7 +60,7 @@ const AddTaskForm = ({ task, onSubmit, onCancel }) => {
   const loadCrops = async () => {
     try {
       const allCrops = await cropService.getAll();
-      const farmCrops = allCrops.filter(crop => crop.farmId === formData.farmId);
+const farmCrops = allCrops.filter(crop => crop.FarmId_c === formData.farmId);
       setCrops(farmCrops);
     } catch (error) {
       console.error("Failed to load crops:", error);
@@ -72,10 +72,10 @@ const AddTaskForm = ({ task, onSubmit, onCancel }) => {
     setLoading(true);
     
     try {
-      const taskData = {
+const taskData = {
         ...formData,
         dueDate: new Date(formData.dueDate).toISOString(),
-        completed: task?.completed || false
+        completed: task?.Completed_c || false
       };
       
       await onSubmit(taskData);
@@ -114,8 +114,8 @@ const AddTaskForm = ({ task, onSubmit, onCancel }) => {
               >
                 <option value="">Select a farm</option>
                 {farms.map(farm => (
-                  <option key={farm.Id} value={farm.Id}>
-                    {farm.name}
+<option key={farm.Id} value={farm.Id}>
+                    {farm.Name_c}
                   </option>
                 ))}
               </Select>
@@ -129,9 +129,9 @@ const AddTaskForm = ({ task, onSubmit, onCancel }) => {
                 required
               >
                 <option value="">Select a crop</option>
-                {crops.map(crop => (
+{crops.map(crop => (
                   <option key={crop.Id} value={crop.Id}>
-                    {crop.name} - {crop.variety}
+                    {crop.Name_c} - {crop.Variety_c}
                   </option>
                 ))}
               </Select>

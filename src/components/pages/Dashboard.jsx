@@ -62,13 +62,13 @@ const Dashboard = () => {
     }
   };
 
-  const handleCompleteTask = async (taskId) => {
+const handleCompleteTask = async (taskId) => {
     try {
       await taskService.complete(taskId);
       setData(prev => ({
         ...prev,
         tasks: prev.tasks.map(task => 
-          task.Id === taskId ? { ...task, completed: true } : task
+          task.Id === taskId ? { ...task, Completed_c: true } : task
         )
       }));
       toast.success("Task completed successfully!");
@@ -80,10 +80,10 @@ const Dashboard = () => {
   if (loading) return <Loading rows={4} />;
   if (error) return <Error message={error} onRetry={loadDashboardData} />;
 
-  const activeCrops = data.crops.filter(crop => crop.status !== "Harvested").length;
-  const pendingTasks = data.tasks.filter(task => !task.completed).length;
+const activeCrops = data.crops.filter(crop => crop.Status_c !== "Harvested").length;
+  const pendingTasks = data.tasks.filter(task => !task.Completed_c).length;
   const overdueTasks = data.tasks.filter(task => 
-    !task.completed && new Date(task.dueDate) < new Date()
+    !task.Completed_c && new Date(task.DueDate_c) < new Date()
   ).length;
 
   return (
@@ -163,7 +163,7 @@ const Dashboard = () => {
                 <ApperIcon name="Lightbulb" size={16} className="text-yellow-500" />
               </div>
               <p className="text-sm text-gray-700 mt-2">
-                {data.weather?.condition?.toLowerCase().includes("rain") 
+{data.weather?.Condition_c?.toLowerCase().includes("rain") 
                   ? "Great weather for natural irrigation! Consider postponing watering tasks."
                   : "Perfect weather for field work. Check your irrigation systems."}
               </p>
@@ -248,7 +248,7 @@ const Dashboard = () => {
               ) : (
                 <div className="space-y-3">
                   {data.recentTransactions.slice(0, 3).map((transaction) => {
-                    const isIncome = transaction.type === "income";
+const isIncome = transaction.Type_c === "income";
                     return (
                       <div key={transaction.Id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                         <div className="flex items-center space-x-3">
@@ -260,12 +260,12 @@ const Dashboard = () => {
                             />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">{transaction.description}</p>
-                            <p className="text-sm text-gray-500">{transaction.category}</p>
+<p className="font-medium text-gray-900">{transaction.Description_c}</p>
+                            <p className="text-sm text-gray-500">{transaction.Category_c}</p>
                           </div>
                         </div>
                         <div className={`font-bold ${isIncome ? "text-green-600" : "text-red-600"}`}>
-                          {isIncome ? "+" : "-"}${Math.abs(transaction.amount).toFixed(2)}
+                          {isIncome ? "+" : "-"}${Math.abs(transaction.Amount_c).toFixed(2)}
                         </div>
                       </div>
                     );

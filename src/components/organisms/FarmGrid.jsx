@@ -17,8 +17,8 @@ const FarmGrid = ({ farms, onEdit, onDelete, onViewDetails }) => {
                   <ApperIcon name="MapPin" size={20} className="text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">{farm.name}</CardTitle>
-                  <p className="text-sm text-gray-600">{farm.location}</p>
+<CardTitle className="text-lg">{farm.Name_c}</CardTitle>
+                  <p className="text-sm text-gray-600">{farm.Location_c}</p>
                 </div>
               </div>
               <div className="flex space-x-1">
@@ -48,7 +48,7 @@ const FarmGrid = ({ farms, onEdit, onDelete, onViewDetails }) => {
                 <span className="text-sm text-gray-600">Size:</span>
               </div>
               <Badge variant="secondary" className="font-semibold">
-                {farm.size} acres
+{farm.Size_c} acres
               </Badge>
             </div>
 
@@ -58,7 +58,7 @@ const FarmGrid = ({ farms, onEdit, onDelete, onViewDetails }) => {
                 <span className="text-sm text-gray-600">Created:</span>
               </div>
               <span className="text-sm font-medium text-gray-700">
-                {format(new Date(farm.createdAt), "MMM d, yyyy")}
+{format(new Date(farm.CreatedDate), "MMM d, yyyy")}
               </span>
             </div>
 

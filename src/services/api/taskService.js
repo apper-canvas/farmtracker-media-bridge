@@ -1,88 +1,322 @@
-import tasksData from "@/services/mockData/tasks.json";
+import { toast } from "react-toastify";
+import React from "react";
 
 class TaskService {
   constructor() {
-    this.tasks = [...tasksData];
+    this.apperClient = null;
+    this.tableName = 'task_c';
+    this.initializeClient();
+  }
+
+  initializeClient() {
+    if (typeof window !== 'undefined' && window.ApperSDK) {
+      const { ApperClient } = window.ApperSDK;
+      this.apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+    }
   }
 
   async getAll() {
-    await this.delay(300);
-    return [...this.tasks];
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Title_c"}},
+          {"field": {"Name": "Description_c"}},
+          {"field": {"Name": "Category_c"}},
+          {"field": {"Name": "Priority_c"}},
+          {"field": {"Name": "DueDate_c"}},
+          {"field": {"Name": "Completed_c"}},
+          {"field": {"Name": "FarmId_c"}},
+          {"field": {"Name": "CropId_c"}}
+        ]
+      };
+      
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+      
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching tasks:", error?.response?.data?.message || error);
+      toast.error("Failed to fetch tasks");
+      return [];
+    }
   }
 
   async getById(id) {
-    await this.delay(200);
-    const task = this.tasks.find(t => t.Id === parseInt(id));
-    if (!task) throw new Error("Task not found");
-    return { ...task };
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Title_c"}},
+          {"field": {"Name": "Description_c"}},
+          {"field": {"Name": "Category_c"}},
+          {"field": {"Name": "Priority_c"}},
+          {"field": {"Name": "DueDate_c"}},
+          {"field": {"Name": "Completed_c"}},
+          {"field": {"Name": "FarmId_c"}},
+          {"field": {"Name": "CropId_c"}}
+        ]
+      };
+      
+      const response = await this.apperClient.getRecordById(this.tableName, parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching task ${id}:`, error?.response?.data?.message || error);
+      toast.error("Failed to fetch task");
+      return null;
+    }
   }
 
   async getByFarmId(farmId) {
-    await this.delay(250);
-    return this.tasks.filter(t => t.farmId === farmId.toString()).map(t => ({ ...t }));
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Title_c"}},
+          {"field": {"Name": "Description_c"}},
+          {"field": {"Name": "Category_c"}},
+          {"field": {"Name": "Priority_c"}},
+          {"field": {"Name": "DueDate_c"}},
+          {"field": {"Name": "Completed_c"}},
+          {"field": {"Name": "FarmId_c"}},
+          {"field": {"Name": "CropId_c"}}
+        ],
+        where: [{"FieldName": "FarmId_c", "Operator": "EqualTo", "Values": [parseInt(farmId)]}]
+      };
+      
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+      
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching tasks by farm:", error?.response?.data?.message || error);
+      toast.error("Failed to fetch farm tasks");
+      return [];
+    }
   }
 
   async create(taskData) {
-    await this.delay(400);
-    const newId = Math.max(...this.tasks.map(t => t.Id)) + 1;
-    const newTask = {
-      Id: newId,
-      ...taskData,
-      farmId: taskData.farmId.toString(),
-      cropId: taskData.cropId?.toString() || "",
-      completed: false
-    };
-    this.tasks.push(newTask);
-    return { ...newTask };
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        records: [{
+          Title_c: taskData.title,
+          Description_c: taskData.description || "",
+          Category_c: taskData.category,
+          Priority_c: taskData.priority,
+          DueDate_c: taskData.dueDate,
+          Completed_c: false,
+          FarmId_c: parseInt(taskData.farmId),
+          CropId_c: taskData.cropId ? parseInt(taskData.cropId) : null
+        }]
+      };
+      
+      const response = await this.apperClient.createRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+      
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to create ${failed.length} tasks:`, JSON.stringify(failed));
+          failed.forEach(record => {
+            record.errors?.forEach(error => toast.error(`${error.fieldLabel}: ${error}`));
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        if (successful.length > 0) {
+          return successful[0].data;
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error creating task:", error?.response?.data?.message || error);
+      toast.error("Failed to create task");
+      return null;
+    }
   }
 
   async update(id, taskData) {
-    await this.delay(350);
-    const index = this.tasks.findIndex(t => t.Id === parseInt(id));
-    if (index === -1) throw new Error("Task not found");
-    
-    this.tasks[index] = {
-      ...this.tasks[index],
-      ...taskData,
-      Id: parseInt(id),
-      farmId: taskData.farmId?.toString() || this.tasks[index].farmId,
-      cropId: taskData.cropId?.toString() || this.tasks[index].cropId
-    };
-    return { ...this.tasks[index] };
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          Title_c: taskData.title,
+          Description_c: taskData.description || "",
+          Category_c: taskData.category,
+          Priority_c: taskData.priority,
+          DueDate_c: taskData.dueDate,
+          Completed_c: taskData.completed !== undefined ? taskData.completed : false,
+          FarmId_c: taskData.farmId ? parseInt(taskData.farmId) : null,
+          CropId_c: taskData.cropId ? parseInt(taskData.cropId) : null
+        }]
+      };
+      
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+      
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to update ${failed.length} tasks:`, JSON.stringify(failed));
+          failed.forEach(record => {
+            record.errors?.forEach(error => toast.error(`${error.fieldLabel}: ${error}`));
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        if (successful.length > 0) {
+          return successful[0].data;
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error updating task:", error?.response?.data?.message || error);
+      toast.error("Failed to update task");
+      return null;
+    }
   }
 
   async delete(id) {
-    await this.delay(250);
-    const index = this.tasks.findIndex(t => t.Id === parseInt(id));
-    if (index === -1) throw new Error("Task not found");
-    
-    const deleted = this.tasks.splice(index, 1)[0];
-    return { ...deleted };
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = { 
+        RecordIds: [parseInt(id)]
+      };
+      
+      const response = await this.apperClient.deleteRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return false;
+      }
+      
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to delete ${failed.length} tasks:`, JSON.stringify(failed));
+          failed.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successful.length > 0;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error("Error deleting task:", error?.response?.data?.message || error);
+      toast.error("Failed to delete task");
+      return false;
+    }
   }
 
   async complete(id) {
-    await this.delay(300);
-    const index = this.tasks.findIndex(t => t.Id === parseInt(id));
-    if (index === -1) throw new Error("Task not found");
-    
-    this.tasks[index].completed = true;
-    return { ...this.tasks[index] };
+    try {
+      const task = await this.getById(id);
+      if (!task) return null;
+      
+      return await this.update(id, {
+        ...task,
+        completed: true
+      });
+    } catch (error) {
+      console.error("Error completing task:", error?.response?.data?.message || error);
+      toast.error("Failed to complete task");
+      return null;
+    }
   }
 
   async getUpcoming(days = 7) {
-    await this.delay(250);
-    const now = new Date();
-    const future = new Date();
-    future.setDate(now.getDate() + days);
-    
-    return this.tasks
-      .filter(t => !t.completed && new Date(t.dueDate) <= future)
-      .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-      .map(t => ({ ...t }));
-  }
-
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const now = new Date();
+      const future = new Date();
+      future.setDate(now.getDate() + days);
+      
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Title_c"}},
+          {"field": {"Name": "Description_c"}},
+          {"field": {"Name": "Category_c"}},
+          {"field": {"Name": "Priority_c"}},
+          {"field": {"Name": "DueDate_c"}},
+          {"field": {"Name": "Completed_c"}},
+          {"field": {"Name": "FarmId_c"}},
+          {"field": {"Name": "CropId_c"}}
+        ],
+        where: [
+          {"FieldName": "Completed_c", "Operator": "EqualTo", "Values": [false]},
+          {"FieldName": "DueDate_c", "Operator": "LessThanOrEqualTo", "Values": [future.toISOString()]}
+        ],
+        orderBy: [{"fieldName": "DueDate_c", "sorttype": "ASC"}]
+      };
+      
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+      
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching upcoming tasks:", error?.response?.data?.message || error);
+      toast.error("Failed to fetch upcoming tasks");
+      return [];
+    }
   }
 }
 

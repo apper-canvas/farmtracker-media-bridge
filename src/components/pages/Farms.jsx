@@ -181,9 +181,9 @@ const Farms = () => {
   const handleEditFarm = (farm) => {
     setEditingFarm(farm);
     setFarmForm({
-      name: farm.name,
-      size: farm.size.toString(),
-      location: farm.location
+name: farm.Name_c,
+      size: farm.Size_c.toString(),
+      location: farm.Location_c
     });
     setShowAddForm(true);
   };
@@ -192,11 +192,11 @@ const Farms = () => {
     setEditingCrop(crop);
     setCropForm({
       name: crop.name,
-      variety: crop.variety,
-      plantedDate: crop.plantedDate.split("T")[0],
-      expectedHarvest: crop.expectedHarvest.split("T")[0],
-      status: crop.status,
-      notes: crop.notes || ""
+variety: crop.Variety_c,
+      plantedDate: crop.PlantedDate_c.split("T")[0],
+      expectedHarvest: crop.ExpectedHarvest_c.split("T")[0],
+      status: crop.Status_c,
+      notes: crop.Notes_c || ""
     });
     setShowAddCropForm(true);
   };
@@ -312,8 +312,8 @@ const Farms = () => {
                 Back to Farms
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{selectedFarm.name}</h1>
-                <p className="text-gray-600">{selectedFarm.location} • {selectedFarm.size} acres</p>
+<h1 className="text-2xl font-bold text-gray-900">{selectedFarm.Name_c}</h1>
+                <p className="text-gray-600">{selectedFarm.Location_c} • {selectedFarm.Size_c} acres</p>
               </div>
             </div>
             <Button

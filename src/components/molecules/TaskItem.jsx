@@ -27,45 +27,45 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete }) => {
     }
   };
 
-  const isOverdue = new Date(task.dueDate) < new Date() && !task.completed;
-  const isDueSoon = new Date(task.dueDate) - new Date() < 24 * 60 * 60 * 1000 && !task.completed;
+const isOverdue = new Date(task.DueDate_c) < new Date() && !task.Completed_c;
+  const isDueSoon = new Date(task.DueDate_c) - new Date() < 24 * 60 * 60 * 1000 && !task.Completed_c;
 
   return (
-    <Card className={`transition-all duration-300 ${task.completed ? "opacity-75" : ""} ${isOverdue ? "border-red-300 bg-red-50/50" : isDueSoon ? "border-yellow-300 bg-yellow-50/50" : ""}`}>
+<Card className={`transition-all duration-300 ${task.Completed_c ? "opacity-75" : ""} ${isOverdue ? "border-red-300 bg-red-50/50" : isDueSoon ? "border-yellow-300 bg-yellow-50/50" : ""}`}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-3 flex-1">
             <div className="flex-shrink-0 mt-1">
-              <div className={`p-2 rounded-lg ${task.completed ? "bg-green-100" : "bg-primary-100"}`}>
+<div className={`p-2 rounded-lg ${task.Completed_c ? "bg-green-100" : "bg-primary-100"}`}>
                 <ApperIcon 
-                  name={task.completed ? "CheckCircle" : getCategoryIcon(task.category)} 
+                  name={task.Completed_c ? "CheckCircle" : getCategoryIcon(task.Category_c)} 
                   size={16} 
-                  className={task.completed ? "text-green-600" : "text-primary-600"} 
+                  className={task.Completed_c ? "text-green-600" : "text-primary-600"}
                 />
               </div>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-2">
-                <h4 className={`font-semibold ${task.completed ? "line-through text-gray-500" : "text-gray-900"}`}>
-                  {task.title}
+<h4 className={`font-semibold ${task.Completed_c ? "line-through text-gray-500" : "text-gray-900"}`}>
+                  {task.Title_c}
                 </h4>
-                <Badge variant={getPriorityVariant(task.priority)} className="ml-2">
-                  {task.priority}
+                <Badge variant={getPriorityVariant(task.Priority_c)} className="ml-2">
+                  {task.Priority_c}
                 </Badge>
               </div>
-              {task.description && (
-                <p className={`text-sm mb-2 ${task.completed ? "text-gray-400" : "text-gray-600"}`}>
-                  {task.description}
+{task.Description_c && (
+                <p className={`text-sm mb-2 ${task.Completed_c ? "text-gray-400" : "text-gray-600"}`}>
+                  {task.Description_c}
                 </p>
               )}
               <div className="flex items-center space-x-4 text-xs text-gray-500">
                 <div className="flex items-center">
                   <ApperIcon name="Calendar" size={12} className="mr-1" />
-                  {format(new Date(task.dueDate), "MMM d, yyyy")}
+{format(new Date(task.DueDate_c), "MMM d, yyyy")}
                 </div>
                 <div className="flex items-center">
                   <ApperIcon name="Tag" size={12} className="mr-1" />
-                  {task.category}
+{task.Category_c}
                 </div>
                 {isOverdue && (
                   <Badge variant="error" className="text-xs">
@@ -81,7 +81,7 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete }) => {
             </div>
           </div>
           <div className="flex items-center space-x-2 ml-4">
-            {!task.completed && (
+{!task.Completed_c && (
               <Button
                 size="sm"
                 variant="accent"

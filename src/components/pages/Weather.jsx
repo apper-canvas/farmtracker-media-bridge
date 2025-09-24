@@ -102,25 +102,25 @@ const Weather = () => {
               <div className="flex items-center space-x-6">
                 <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg">
                   <ApperIcon 
-                    name={currentWeather.condition.toLowerCase().includes("sun") ? "Sun" : 
+name={currentWeather.Condition_c.toLowerCase().includes("sun") ? "Sun" :
                           currentWeather.condition.toLowerCase().includes("rain") ? "CloudRain" : "Cloud"} 
                     size={48} 
                     className="text-primary-600" 
                   />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-1">
-                    {currentWeather.temperature}°F
+<h2 className="text-3xl font-bold text-gray-900 mb-1">
+                    {currentWeather.Temperature_c}°F
                   </h2>
-                  <p className="text-xl text-gray-700 mb-2">{currentWeather.condition}</p>
+                  <p className="text-xl text-gray-700 mb-2">{currentWeather.Condition_c}</p>
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <div className="flex items-center space-x-1">
                       <ApperIcon name="Droplets" size={14} />
-                      <span>{currentWeather.humidity}% humidity</span>
+<span>{currentWeather.Humidity_c}% humidity</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <ApperIcon name="Wind" size={14} />
-                      <span>{currentWeather.windSpeed} mph wind</span>
+                      <span>{currentWeather.WindSpeed_c} mph wind</span>
                     </div>
                   </div>
                 </div>
@@ -181,9 +181,9 @@ const Weather = () => {
               <h4 className="font-semibold text-gray-900 mb-3">Temperature Trend</h4>
               <div className="space-y-2">
                 {weather.map((day, index) => (
-                  <div key={day.Id} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">{day.date}</span>
-                    <span className="font-medium">{day.temperature}°F</span>
+<div key={day.Id} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">{day.Date_c}</span>
+                    <span className="font-medium">{day.Temperature_c}°F</span>
                   </div>
                 ))}
               </div>
@@ -192,16 +192,16 @@ const Weather = () => {
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">Precipitation Forecast</h4>
               <div className="space-y-2">
-                {weather.map((day) => (
+{weather.map((day) => (
                   <div key={day.Id} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">{day.date}</span>
+                    <span className="text-sm text-gray-600">{day.Date_c}</span>
                     <div className="flex items-center space-x-2">
                       <div className={`w-2 h-2 rounded-full ${
-                        day.precipitation > 50 ? "bg-blue-500" :
-                        day.precipitation > 20 ? "bg-blue-300" : "bg-gray-300"
+                        day.Precipitation_c > 50 ? "bg-blue-500" :
+                        day.Precipitation_c > 20 ? "bg-blue-300" : "bg-gray-300"
                       }`}></div>
                       <span className="text-sm font-medium">
-                        {day.precipitation || 0}% chance
+                        {day.Precipitation_c || 0}% chance
                       </span>
                     </div>
                   </div>
@@ -216,10 +216,10 @@ const Weather = () => {
               <span className="font-medium text-gray-900">This Week's Summary</span>
             </div>
             <p className="text-sm text-gray-700">
-              {weather.filter(day => day.condition.toLowerCase().includes("rain")).length > 0
+{weather.filter(day => day.Condition_c.toLowerCase().includes("rain")).length > 0
                 ? "Rain expected this week - plan indoor activities and check drainage systems."
                 : "Mostly dry conditions expected - maintain regular irrigation schedule."
-              } Average temperature: {Math.round(weather.reduce((sum, day) => sum + day.temperature, 0) / weather.length)}°F.
+              } Average temperature: {Math.round(weather.reduce((sum, day) => sum + day.Temperature_c, 0) / weather.length)}°F.
             </p>
           </div>
         </CardContent>

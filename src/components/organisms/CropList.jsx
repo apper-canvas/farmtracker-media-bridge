@@ -42,21 +42,21 @@ const CropList = ({ crops, onEdit, onDelete, onHarvest }) => {
       let aValue, bValue;
       
       switch (sortBy) {
-        case "name":
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
+case "name":
+          aValue = a.Name_c.toLowerCase();
+          bValue = b.Name_c.toLowerCase();
           break;
         case "status":
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
+          aValue = a.Status_c.toLowerCase();
+          bValue = b.Status_c.toLowerCase();
           break;
         case "plantedDate":
-          aValue = new Date(a.plantedDate);
-          bValue = new Date(b.plantedDate);
+          aValue = new Date(a.PlantedDate_c);
+          bValue = new Date(b.PlantedDate_c);
           break;
         case "expectedHarvest":
-          aValue = new Date(a.expectedHarvest);
-          bValue = new Date(b.expectedHarvest);
+          aValue = new Date(a.ExpectedHarvest_c);
+          bValue = new Date(b.ExpectedHarvest_c);
           break;
         default:
           return 0;
@@ -114,41 +114,41 @@ const CropList = ({ crops, onEdit, onDelete, onHarvest }) => {
               <div className="flex items-start space-x-3 flex-1">
                 <div className="flex-shrink-0 mt-1">
                   <div className="p-2 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg">
-                    <ApperIcon name={getCropIcon(crop.name)} size={18} className="text-white" />
+<ApperIcon name={getCropIcon(crop.Name_c)} size={18} className="text-white" />
                   </div>
                 </div>
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-gray-900">{crop.name}</h4>
-                    <Badge variant={getStatusVariant(crop.status)}>
-                      {crop.status}
+<h4 className="font-semibold text-gray-900">{crop.Name_c}</h4>
+                    <Badge variant={getStatusVariant(crop.Status_c)}>
+                      {crop.Status_c}
                     </Badge>
                   </div>
                   
-                  {crop.variety && (
-                    <p className="text-sm text-gray-600 mb-2">Variety: {crop.variety}</p>
+{crop.Variety_c && (
+                    <p className="text-sm text-gray-600 mb-2">Variety: {crop.Variety_c}</p>
                   )}
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-500">
                     <div className="flex items-center space-x-1">
                       <ApperIcon name="Calendar" size={12} />
-                      <span>Planted: {format(new Date(crop.plantedDate), "MMM d, yyyy")}</span>
+<span>Planted: {format(new Date(crop.PlantedDate_c), "MMM d, yyyy")}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <ApperIcon name="Clock" size={12} />
-                      <span>Harvest: {getDaysToHarvest(crop.expectedHarvest)}</span>
+<span>Harvest: {getDaysToHarvest(crop.ExpectedHarvest_c)}</span>
                     </div>
                   </div>
                   
                   {crop.notes && (
-                    <p className="text-sm text-gray-600 mt-2 italic">{crop.notes}</p>
+<p className="text-sm text-gray-600 mt-2 italic">{crop.Notes_c}</p>
                   )}
                 </div>
               </div>
               
               <div className="flex items-center space-x-2 ml-4">
-                {crop.status.toLowerCase() === "ready" && (
+{crop.Status_c.toLowerCase() === "ready" && (
                   <Button
                     size="sm"
                     variant="accent"

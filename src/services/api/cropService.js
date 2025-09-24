@@ -1,73 +1,273 @@
-import cropsData from "@/services/mockData/crops.json";
+import { toast } from "react-toastify";
 
 class CropService {
   constructor() {
-    this.crops = [...cropsData];
+    this.apperClient = null;
+    this.tableName = 'crop_c';
+    this.initializeClient();
+  }
+
+  initializeClient() {
+    if (typeof window !== 'undefined' && window.ApperSDK) {
+      const { ApperClient } = window.ApperSDK;
+      this.apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+    }
   }
 
   async getAll() {
-    await this.delay(300);
-    return [...this.crops];
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Name_c"}},
+          {"field": {"Name": "Variety_c"}},
+          {"field": {"Name": "Status_c"}},
+          {"field": {"Name": "PlantedDate_c"}},
+          {"field": {"Name": "ExpectedHarvest_c"}},
+          {"field": {"Name": "Notes_c"}},
+          {"field": {"Name": "FarmId_c"}}
+        ]
+      };
+      
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+      
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching crops:", error?.response?.data?.message || error);
+      toast.error("Failed to fetch crops");
+      return [];
+    }
   }
 
   async getById(id) {
-    await this.delay(200);
-    const crop = this.crops.find(c => c.Id === parseInt(id));
-    if (!crop) throw new Error("Crop not found");
-    return { ...crop };
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Name_c"}},
+          {"field": {"Name": "Variety_c"}},
+          {"field": {"Name": "Status_c"}},
+          {"field": {"Name": "PlantedDate_c"}},
+          {"field": {"Name": "ExpectedHarvest_c"}},
+          {"field": {"Name": "Notes_c"}},
+          {"field": {"Name": "FarmId_c"}}
+        ]
+      };
+      
+      const response = await this.apperClient.getRecordById(this.tableName, parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching crop ${id}:`, error?.response?.data?.message || error);
+      toast.error("Failed to fetch crop");
+      return null;
+    }
   }
 
   async getByFarmId(farmId) {
-    await this.delay(250);
-    return this.crops.filter(c => c.farmId === farmId.toString()).map(c => ({ ...c }));
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        fields: [
+          {"field": {"Name": "Id"}},
+          {"field": {"Name": "Name_c"}},
+          {"field": {"Name": "Variety_c"}},
+          {"field": {"Name": "Status_c"}},
+          {"field": {"Name": "PlantedDate_c"}},
+          {"field": {"Name": "ExpectedHarvest_c"}},
+          {"field": {"Name": "Notes_c"}},
+          {"field": {"Name": "FarmId_c"}}
+        ],
+        where: [{"FieldName": "FarmId_c", "Operator": "EqualTo", "Values": [parseInt(farmId)]}]
+      };
+      
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+      
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching crops by farm:", error?.response?.data?.message || error);
+      toast.error("Failed to fetch farm crops");
+      return [];
+    }
   }
 
   async create(cropData) {
-    await this.delay(400);
-    const newId = Math.max(...this.crops.map(c => c.Id)) + 1;
-    const newCrop = {
-      Id: newId,
-      ...cropData,
-      farmId: cropData.farmId.toString()
-    };
-    this.crops.push(newCrop);
-    return { ...newCrop };
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        records: [{
+          Name_c: cropData.name,
+          Variety_c: cropData.variety || "",
+          Status_c: cropData.status,
+          PlantedDate_c: cropData.plantedDate,
+          ExpectedHarvest_c: cropData.expectedHarvest,
+          Notes_c: cropData.notes || "",
+          FarmId_c: parseInt(cropData.farmId)
+        }]
+      };
+      
+      const response = await this.apperClient.createRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+      
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to create ${failed.length} crops:`, JSON.stringify(failed));
+          failed.forEach(record => {
+            record.errors?.forEach(error => toast.error(`${error.fieldLabel}: ${error}`));
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        if (successful.length > 0) {
+          return successful[0].data;
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error creating crop:", error?.response?.data?.message || error);
+      toast.error("Failed to create crop");
+      return null;
+    }
   }
 
   async update(id, cropData) {
-    await this.delay(350);
-    const index = this.crops.findIndex(c => c.Id === parseInt(id));
-    if (index === -1) throw new Error("Crop not found");
-    
-    this.crops[index] = {
-      ...this.crops[index],
-      ...cropData,
-      Id: parseInt(id),
-      farmId: cropData.farmId?.toString() || this.crops[index].farmId
-    };
-    return { ...this.crops[index] };
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          Name_c: cropData.name,
+          Variety_c: cropData.variety || "",
+          Status_c: cropData.status,
+          PlantedDate_c: cropData.plantedDate,
+          ExpectedHarvest_c: cropData.expectedHarvest,
+          Notes_c: cropData.notes || "",
+          FarmId_c: parseInt(cropData.farmId)
+        }]
+      };
+      
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+      
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to update ${failed.length} crops:`, JSON.stringify(failed));
+          failed.forEach(record => {
+            record.errors?.forEach(error => toast.error(`${error.fieldLabel}: ${error}`));
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        if (successful.length > 0) {
+          return successful[0].data;
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error updating crop:", error?.response?.data?.message || error);
+      toast.error("Failed to update crop");
+      return null;
+    }
   }
 
   async delete(id) {
-    await this.delay(250);
-    const index = this.crops.findIndex(c => c.Id === parseInt(id));
-    if (index === -1) throw new Error("Crop not found");
-    
-    const deleted = this.crops.splice(index, 1)[0];
-    return { ...deleted };
+    try {
+      if (!this.apperClient) this.initializeClient();
+      
+      const params = { 
+        RecordIds: [parseInt(id)]
+      };
+      
+      const response = await this.apperClient.deleteRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return false;
+      }
+      
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to delete ${failed.length} crops:`, JSON.stringify(failed));
+          failed.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successful.length > 0;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error("Error deleting crop:", error?.response?.data?.message || error);
+      toast.error("Failed to delete crop");
+      return false;
+    }
   }
 
   async harvest(id) {
-    await this.delay(300);
-    const index = this.crops.findIndex(c => c.Id === parseInt(id));
-    if (index === -1) throw new Error("Crop not found");
-    
-    this.crops[index].status = "Harvested";
-    return { ...this.crops[index] };
-  }
-
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    try {
+      const crop = await this.getById(id);
+      if (!crop) return null;
+      
+      return await this.update(id, {
+        ...crop,
+        status: "Harvested"
+      });
+    } catch (error) {
+      console.error("Error harvesting crop:", error?.response?.data?.message || error);
+      toast.error("Failed to harvest crop");
+      return null;
+    }
   }
 }
 

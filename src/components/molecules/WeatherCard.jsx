@@ -29,35 +29,35 @@ const WeatherCard = ({ weather, isToday = false }) => {
       <CardContent className="p-4 text-center">
         <div className="space-y-3">
           <div className="flex flex-col items-center space-y-2">
-            <div className={`p-3 rounded-full bg-gradient-to-br ${getWeatherGradient(weather.condition)} shadow-lg`}>
-              <ApperIcon name={getWeatherIcon(weather.condition)} size={24} className="text-white" />
+<div className={`p-3 rounded-full bg-gradient-to-br ${getWeatherGradient(weather.Condition_c)} shadow-lg`}>
+              <ApperIcon name={getWeatherIcon(weather.Condition_c)} size={24} className="text-white" />
             </div>
             {isToday ? (
               <h3 className="font-bold text-lg text-gray-900">Today</h3>
             ) : (
-              <h3 className="font-semibold text-gray-800">{weather.date}</h3>
+<h3 className="font-semibold text-gray-800">{weather.Date_c}</h3>
             )}
           </div>
           
           <div className="space-y-2">
             <div className="flex justify-center space-x-2">
               <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                {weather.temperature}°
+{weather.Temperature_c}°
               </span>
             </div>
-            <p className="text-sm text-gray-600 font-medium">{weather.condition}</p>
+<p className="text-sm text-gray-600 font-medium">{weather.Condition_c}</p>
             
-            {weather.humidity && (
+{weather.Humidity_c && (
               <div className="flex items-center justify-center space-x-1 text-xs text-gray-500">
                 <ApperIcon name="Droplets" size={12} />
-                <span>{weather.humidity}%</span>
+                <span>{weather.Humidity_c}%</span>
               </div>
             )}
             
-            {weather.windSpeed && (
+{weather.WindSpeed_c && (
               <div className="flex items-center justify-center space-x-1 text-xs text-gray-500">
                 <ApperIcon name="Wind" size={12} />
-                <span>{weather.windSpeed} mph</span>
+                <span>{weather.WindSpeed_c} mph</span>
               </div>
             )}
           </div>

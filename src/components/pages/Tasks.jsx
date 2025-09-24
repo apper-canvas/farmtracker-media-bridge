@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/atoms/Card";
-import Button from "@/components/atoms/Button";
-import TaskFilters from "@/components/organisms/TaskFilters";
-import TaskItem from "@/components/molecules/TaskItem";
-import AddTaskForm from "@/components/organisms/AddTaskForm";
-import ApperIcon from "@/components/ApperIcon";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card";
 import { taskService } from "@/services/api/taskService";
 import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import TaskItem from "@/components/molecules/TaskItem";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import Button from "@/components/atoms/Button";
+import TaskFilters from "@/components/organisms/TaskFilters";
+import AddTaskForm from "@/components/organisms/AddTaskForm";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -49,14 +49,14 @@ const Tasks = () => {
     let filtered = [...tasks];
 
     // Status filter
-    if (filters.status !== "all") {
+if (filters.status !== "all") {
       if (filters.status === "pending") {
-        filtered = filtered.filter(task => !task.completed);
+        filtered = filtered.filter(task => !task.Completed_c);
       } else if (filters.status === "completed") {
-        filtered = filtered.filter(task => task.completed);
+        filtered = filtered.filter(task => task.Completed_c);
       } else if (filters.status === "overdue") {
         filtered = filtered.filter(task => 
-          !task.completed && new Date(task.dueDate) < new Date()
+          !task.Completed_c && new Date(task.DueDate_c) < new Date()
         );
       }
     }
@@ -64,34 +64,34 @@ const Tasks = () => {
     // Priority filter
     if (filters.priority !== "all") {
       filtered = filtered.filter(task => 
-        task.priority.toLowerCase() === filters.priority
+        task.Priority_c?.toLowerCase() === filters.priority
       );
     }
 
     // Category filter
     if (filters.category !== "all") {
       filtered = filtered.filter(task => 
-        task.category.toLowerCase() === filters.category
+        task.Category_c?.toLowerCase() === filters.category
       );
     }
 
     // Sort by due date and priority
     filtered.sort((a, b) => {
-      // Completed tasks go to bottom
-      if (a.completed !== b.completed) {
-        return a.completed ? 1 : -1;
+// Completed tasks go to bottom
+      if (a.Completed_c !== b.Completed_c) {
+        return a.Completed_c ? 1 : -1;
       }
       
       // Sort by due date
-      const dateA = new Date(a.dueDate);
-      const dateB = new Date(b.dueDate);
+      const dateA = new Date(a.DueDate_c);
+      const dateB = new Date(b.DueDate_c);
       if (dateA.getTime() !== dateB.getTime()) {
         return dateA - dateB;
       }
       
-      // Sort by priority
+// Sort by priority
       const priorityOrder = { high: 0, medium: 1, low: 2 };
-      return priorityOrder[a.priority.toLowerCase()] - priorityOrder[b.priority.toLowerCase()];
+      return priorityOrder[a.Priority_c?.toLowerCase()] - priorityOrder[b.Priority_c?.toLowerCase()];
     });
 
     setFilteredTasks(filtered);
@@ -176,31 +176,31 @@ const Tasks = () => {
             <Card className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                  {tasks.filter(t => !t.completed).length}
+{tasks.filter(t => !t.Completed_c).length}
                 </div>
                 <div className="text-sm text-gray-600">Pending</div>
               </div>
             </Card>
             <Card className="p-4">
               <div className="text-center">
-                <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-                  {tasks.filter(t => t.completed).length}
+<div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
+                  {tasks.filter(t => t.Completed_c).length}
                 </div>
                 <div className="text-sm text-gray-600">Completed</div>
               </div>
             </Card>
             <Card className="p-4">
-              <div className="text-center">
+<div className="text-center">
                 <div className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-                  {tasks.filter(t => !t.completed && new Date(t.dueDate) < new Date()).length}
+                  {tasks.filter(t => !t.Completed_c && new Date(t.DueDate_c) < new Date()).length}
                 </div>
-                <div className="text-sm text-gray-600">Overdue</div>
+                <p className="text-sm text-gray-600">Overdue Tasks</p>
               </div>
             </Card>
             <Card className="p-4">
               <div className="text-center">
-                <div className="text-2xl font-bold bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent">
-                  {tasks.filter(t => !t.completed && t.priority.toLowerCase() === "high").length}
+<div className="text-2xl font-bold bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent">
+                  {tasks.filter(t => !t.Completed_c && t.Priority_c?.toLowerCase() === "high").length}
                 </div>
                 <div className="text-sm text-gray-600">High Priority</div>
               </div>
